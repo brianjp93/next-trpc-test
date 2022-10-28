@@ -12,7 +12,7 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
   return (
     <Base>
       <h1>{recipe.name}</h1>
-      <AddIngredient recipeId={recipe.id} onAdd={() => query.refetch()}/>
+      <AddIngredient recipeId={recipe.id} onAdd={() => query.refetch()} />
       <h3 className="mt-4 underline">All Ingredients</h3>
       <IngredientList ingredients={ingredients} />
     </Base>
@@ -22,22 +22,32 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
 function IngredientList({ ingredients }: { ingredients: Ingredient[] }) {
   return (
     <>
-    {ingredients.map((item) => {
-        return <div key={item.id}>{item.name}: {item.quantity}</div>;
+      {ingredients.map((item) => {
+        return (
+          <div key={item.id}>
+            {item.name}: {item.quantity}
+          </div>
+        );
       })}
     </>
   );
 }
 
-function AddIngredient({recipeId, onAdd}: {recipeId: string, onAdd: () => void}) {
+function AddIngredient({
+  recipeId,
+  onAdd,
+}: {
+  recipeId: string;
+  onAdd: () => void;
+}) {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const mutation = trpc.recipe.addIngredient.useMutation()
+  const mutation = trpc.recipe.addIngredient.useMutation();
 
-    const handleMutation = () => {
-      mutation.mutate({recipeId, name, quantity})
-      onAdd()
-    }
+  const handleMutation = () => {
+    mutation.mutate({ recipeId, name, quantity });
+    onAdd();
+  };
   return (
     <div>
       <div>Name</div>
@@ -53,9 +63,7 @@ function AddIngredient({recipeId, onAdd}: {recipeId: string, onAdd: () => void})
         value={quantity}
         onChange={(event) => setQuantity(parseInt(event.currentTarget.value))}
       />
-      <button
-        onClick={handleMutation}
-        className="btn block">
+      <button onClick={handleMutation} className="btn block">
         create
       </button>
     </div>
