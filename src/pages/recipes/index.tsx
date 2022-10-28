@@ -11,10 +11,6 @@ function useRecipes() {
 export default function Recipes() {
   const recipesQuery = useRecipes();
   const recipes = recipesQuery.data || [];
-  const today = trpc.recipe.getToday.useQuery();
-  if (today.isSuccess) {
-    today.data.toISOString();
-  }
 
   return (
     <div className="container mx-auto mt-4 px-4">
