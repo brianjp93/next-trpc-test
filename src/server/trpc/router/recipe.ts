@@ -6,7 +6,7 @@ export const recipeRouter = router({
     return ctx.prisma.recipe.findMany();
   }),
   getAllIngredients: publicProcedure
-    .input(z.object({ recipeId: z.string() }))
+    .input(z.object({ recipeId: z.string().cuid() }))
     .query(({ ctx, input }) => {
       return ctx.prisma.ingredient.findMany({
         where: { recipeId: input.recipeId },
@@ -15,9 +15,9 @@ export const recipeRouter = router({
   addIngredient: publicProcedure
     .input(
       z.object({
-        recipeId: z.string(),
+        recipeId: z.string().cuid(),
         name: z.string().min(1, "Please provide a longer name."),
-        quantity: z.number().min(1, "Please provide a larger quantity."),
+        quantity: z.number().min(1, "Please provide a larger quantity.").int("Must be an integer."),
       })
     )
     .mutation(({ ctx, input }) => {
