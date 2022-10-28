@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { useState } from "react";
 import { trpc } from "../../utils/trpc";
+import Base from '../../components/base';
 
 function useRecipes() {
   return trpc.recipe.getAllRecipes.useQuery(undefined, {
@@ -13,28 +15,29 @@ export default function Recipes() {
   const recipes = recipesQuery.data || [];
 
   return (
-    <div className="container mx-auto mt-4 px-4">
+    <Base>
       <h1>Recipes</h1>
 
-      <RecipeCreator />
+      <RecipeCreator onCreate={recipesQuery.refetch}/>
 
       <h1 className="mt-10 text-xl">All Recipes</h1>
       {recipes.map((x) => {
-        return <div key={x.id}>{x.name}</div>;
+        return <div key={x.id}>
+          <Link href={`/recipes/${x.id}/`}>{x.name}</Link>
+        </div>;
       })}
-    </div>
+    </Base>
   );
 }
 
-export function RecipeCreator() {
+export function RecipeCreator({onCreate}: {onCreate: () => void}) {
   const [name, setName] = useState("");
-  const recipesQuery = useRecipes();
   const handleCreate = () => {
     create.mutate({ name });
     setName("");
   };
   const create = trpc.recipe.createRecipe.useMutation({
-    onSuccess: () => recipesQuery.refetch(),
+    onSuccess: () => onCreate(),
   });
 
   return (

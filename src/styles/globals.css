@@ -19,3 +19,19 @@ input {
 input:hover, input:focus {
   box-shadow: rgba(255, 255, 255, 0.2) 0px 4px 16px, rgba(255, 255, 255, 0.1) 0px 8px 32px;
 }
+
+.btn {
+  border-color: white;
+  border-width: 1px;
+  border-radius: 5px;
+  padding: 0 0.5em;
+  background-color: #212121;
+}
+
+.btn:hover {
+  box-shadow: rgba(255, 255, 255, 0.2) 0px 4px 16px, rgba(255, 255, 255, 0.1) 0px 8px 32px;
+}
+
+.btn:active {
+  background-color: #444444;
+}
