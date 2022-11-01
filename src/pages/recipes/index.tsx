@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { useState } from "react";
 import { trpc } from "../../utils/trpc";
-import Base from '../../components/base';
+import Base from "../../components/base";
+import { Formik, Field, Form, ErrorMessage } from "formik";
+import { createRecipeValidationSchema } from "../../validators/recipe";
 
 function useRecipes() {
   return trpc.recipe.getAllRecipes.useQuery(undefined, {
@@ -18,48 +19,52 @@ export default function Recipes() {
     <Base>
       <h1>Recipes</h1>
 
-      <RecipeCreator onCreate={recipesQuery.refetch}/>
+      <RecipeCreator onCreate={recipesQuery.refetch} />
 
       <h1 className="mt-10 text-xl">All Recipes</h1>
       {recipes.map((x) => {
-        return <div key={x.id}>
-          <Link href={`/recipes/${x.id}/`}>{x.name}</Link>
-        </div>;
+        return (
+          <div key={x.id}>
+            <Link href={`/recipes/${x.id}/`}>{x.name}</Link>
+          </div>
+        );
       })}
     </Base>
   );
 }
 
-export function RecipeCreator({onCreate}: {onCreate: () => void}) {
-  const [name, setName] = useState("");
-  const handleCreate = () => {
-    create.mutate({ name });
-    setName("");
-  };
+export function RecipeCreator({ onCreate }: { onCreate?: () => void }) {
   const create = trpc.recipe.createRecipe.useMutation({
-    onSuccess: () => onCreate(),
+    onSuccess: () => onCreate && onCreate(),
   });
 
   return (
     <>
-      <input
-        type="name"
-        value={name}
-        onKeyDown={(event) => {
-          if (event.key === "Enter") {
-            handleCreate();
-          }
+      <Formik
+        onSubmit={async (values, { setErrors }) => {
+          await create
+            .mutateAsync(values)
+            .catch((error) => setErrors({ name: error?.message }));
         }}
-        onChange={(event) => setName(event.currentTarget.value)}
-      />
-      <button
-        className="border-stroke-white mx-2 rounded-md border border-solid px-2"
-        onClick={() => handleCreate()}
+        validationSchema={createRecipeValidationSchema}
+        initialValues={{ name: "" }}
       >
-        Create
-      </button>
+        {({ isValid }) => (
+          <Form>
+            <label htmlFor="name">Recipe Name</label>
+            <Field name="name" type="text" />
+            <ErrorMessage name="name" />
 
-      {create.error?.message && <pre>Error: {create.error?.message}</pre>}
+            <button
+              type="submit"
+              disabled={!isValid || create.isLoading}
+              className="border-stroke-white mx-2 rounded-md border border-solid px-2"
+            >
+              Create
+            </button>
+          </Form>
+        )}
+      </Formik>
     </>
   );
 }

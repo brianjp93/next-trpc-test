@@ -4,6 +4,7 @@ import { exampleRouter } from "./example";
 import { authRouter } from "./auth";
 import { recipeRouter } from "./recipe";
 
+
 export const appRouter = router({
   example: exampleRouter,
   auth: authRouter,
